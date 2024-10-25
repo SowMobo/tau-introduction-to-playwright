@@ -1,23 +1,28 @@
-import { type Locator, type Page, expect } from '@playwright/test';
+import {expect, type Locator, type Page} from '@playwright/test';
+import { TopMenuPage } from './top-menu-page';
 
-export class HomePage {
-    readonly page: Page;
-    readonly getStartedButton: Locator;
-    readonly pageTitle: RegExp;
+export class HomePage{
+    // varaibles
+    readonly page:Page;
+    readonly  getStartedButton: Locator;
 
-    constructor(page: Page) {
+
+    // constructor
+    constructor (page: Page) {
         this.page = page;
-        this.getStartedButton = page.getByRole('link', { name: 'Get started' });
-        this.pageTitle = /Playwright/;
+        this.getStartedButton = page.getByRole('link', {name: 'Get started'});
     }
 
+    // methods
     async clickGetStarted() {
         await this.getStartedButton.click();
+        return new TopMenuPage(this.page);
     }
 
-    async assertPageTitle() {
-        await expect(this.page).toHaveTitle(this.pageTitle);
+    async assertPageTitle(title: RegExp){
+        await expect(this.page).toHaveTitle(title);
     }
+
 }
 
-export default HomePage;
+export default HomePage; 

@@ -1,46 +1,49 @@
-import { test, type Page } from '@playwright/test';
-import { HomePage } from '../pages/home-page';
+import {test, expect, type Page} from '@playwright/test';
+import {HomePage} from '../pages/home-page';
 import { TopMenuPage } from '../pages/top-menu-page';
 
+// AAA Pattern
+// POM
+// test variables
 const URL = 'https://playwright.dev/';
+const homePageTitle = /Playwright/;
+const topMenuPageUrl = /.*intro/;
+
+// page variables
 let homePage: HomePage;
 let topMenuPage: TopMenuPage;
-const pageUrl = /.*intro/;
 
+// set up a test
 test.beforeEach(async ({page}) => {
     await page.goto(URL);
     homePage = new HomePage(page);
 });
 
-async function clickGetStarted(page: Page) {
-    await homePage.clickGetStarted();
-    topMenuPage = new TopMenuPage(page);
-}
+// test suite
+test.describe('test Playwright website', () => {
+    // tests
 
-test.describe('Playwright website', () => {
+    test('has title', async () =>{
+        await homePage.assertPageTitle(homePageTitle);
+    });
 
-    test('has title', async () => {
-        await homePage.assertPageTitle();
+    test('Open Get Started page', async () => {
+        topMenuPage = await homePage.clickGetStarted();
+        await topMenuPage.assertPageUrl(topMenuPageUrl);
     });
-    
-    test('get started link', async ({ page }) => {
-        // Act
-        await clickGetStarted(page);
-        // Assert
-        await topMenuPage.assertPageUrl(pageUrl);
-    });
-    
-    test('check Java page', async ({ page }) => {
-        await test.step('Act', async () => {
-            await clickGetStarted(page);
+
+    test('Check Java page', async () => {
+        await test.step('Act', async () =>{
+            topMenuPage = await homePage.clickGetStarted();
             await topMenuPage.hoverNode();
             await topMenuPage.clickJava();
         });
-      
+
         await test.step('Assert', async () => {
-            await topMenuPage.assertPageUrl(pageUrl);
+            await topMenuPage.assertPageUrl(topMenuPageUrl);
             await topMenuPage.assertNodeDescriptionNotVisible();
-            await topMenuPage.assertJavaDescriptionVisible();
-        });
-    });
-});
+            await topMenuPage.assertJavaDescriptionBeVisible();
+        })
+    })
+
+})
